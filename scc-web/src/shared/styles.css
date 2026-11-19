@@ -36,21 +36,12 @@ a { color: inherit; text-decoration: none; }
 .nav-item.active { color: #fff; background: var(--brand); box-shadow: 0 6px 14px rgba(0,0,0,.11); font-weight: 600; }
 .nav-item .el-icon { font-size: 17px; }
 .nav-count { margin-left: auto; min-width: 18px; height: 18px; display: grid; place-items: center; border-radius: 10px; background: rgba(255,255,255,.2); font-size: 10px; }
-.sidebar-bottom { margin-top: auto; padding: 14px 12px 18px; border-top: 1px solid rgba(255,255,255,.08); }
-.sidebar-help { display: flex; gap: 9px; align-items: flex-start; padding: 10px 12px 16px; }
-.sidebar-help > .el-icon { color: #72b5f4; margin-top: 2px; }
-.sidebar-help div { display: flex; flex-direction: column; gap: 4px; }
-.sidebar-help strong { font-size: 12px; color: #d7e4f2; font-weight: 500; }
-.sidebar-help span { font-size: 10px; color: #8298af; }
-.reset-button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; color: #9fb0c4; border: 0; border-radius: 7px; background: transparent; text-align: left; font-size: 12px; }
-.reset-button:hover { background: rgba(255,255,255,.08); color: #fff; }
 .app-body { margin-left: 236px; min-width: 0; flex: 1; display: flex; flex-direction: column; transition: margin-left .2s ease; }
 .sidebar-collapsed .app-sidebar { width: 68px; }
 .sidebar-collapsed .app-body { margin-left: 68px; }
 .sidebar-collapsed .brand { padding: 0 15px; }
 .sidebar-collapsed .side-nav { padding: 0 8px; }
 .sidebar-collapsed .nav-item { justify-content: center; padding: 0; }
-.sidebar-collapsed .reset-button { justify-content: center; }
 .topbar { position: sticky; z-index: 20; top: 0; height: 68px; flex: 0 0 68px; display: flex; justify-content: space-between; align-items: center; padding: 0 29px; background: #fff; border-bottom: 1px solid #edf0f4; }
 .topbar-left, .topbar-actions { display: flex; align-items: center; gap: 19px; }
 .topbar-actions { gap: 14px; }
@@ -58,8 +49,6 @@ a { color: inherit; text-decoration: none; }
 .icon-button:hover, .icon-button.soft { background: #f3f6fa; }
 .breadcrumb { display: flex; gap: 13px; align-items: center; font-size: 13px; white-space: nowrap; }
 .breadcrumb span { color: #8d9aac; }.breadcrumb i { color: #c4ccd6; font-style: normal; }.breadcrumb strong { color: #2b3b50; font-weight: 600; }
-.demo-chip { display: flex; align-items: center; gap: 6px; padding: 6px 10px; background: #ecf8f1; border-radius: 20px; color: #298258; font-size: 11px; white-space: nowrap; }
-.demo-pulse { width: 6px; height: 6px; border-radius: 50%; background: #38b37b; box-shadow: 0 0 0 3px rgba(56,179,123,.14); }
 .account-switch { display: flex; align-items: center; gap: 10px; padding: 3px 0 3px 8px; border: 0; background: transparent; color: #63748b; }
 .avatar { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px; background: #eaf1fb; color: var(--brand); font-size: 18px; }
 .account-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; max-width: 140px; }
@@ -111,6 +100,6 @@ a { color: inherit; text-decoration: none; }
   .app-sidebar { transform: translateX(-100%); width: 236px !important; }.app-body, .sidebar-collapsed .app-body { margin-left: 0; }
   .mobile-open .app-sidebar { transform: translateX(0); }.mobile-scrim { position: fixed; z-index: 25; inset: 0; display: block; background: rgba(8,24,42,.45); }
   .collapse-button { display: none; }.mobile-menu-button { display: grid; }.topbar { height: 60px; flex-basis: 60px; }.topbar-left { gap: 5px; }.topbar-actions { gap: 5px; }
-  .demo-chip, .global-search-button, .notice-badge, .account-copy, .account-switch > .el-icon { display: none; }
+  .global-search-button, .notice-badge, .account-copy, .account-switch > .el-icon { display: none; }
   .breadcrumb span, .breadcrumb i { display: none; }.workspace-tabs { padding: 5px 13px; }.page-content { padding: 20px 13px 26px; }.page-heading { align-items: flex-start; flex-direction: column; }.page-heading h1 { font-size: 22px; }.grid-three { grid-template-columns: 1fr; }.form-grid { grid-template-columns: 1fr; }.form-grid .span-two { grid-column: auto; }.app-footer { flex-wrap: wrap; gap: 3px; }
 }

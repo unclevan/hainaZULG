@@ -17,14 +17,14 @@ const source = computed(() => route.path.startsWith("/archive/") ? "原同力商
     <section class="surface planned-card">
       <div class="planned-symbol"><el-icon><Document /></el-icon></div>
       <div class="planned-content">
-        <el-tag type="info" effect="plain">页面占位 · 暂无真实数据</el-tag>
+        <el-tag type="info" effect="plain">功能建设中</el-tag>
         <h2>{{ item?.title }}</h2>
         <p>{{ item?.description }}</p>
         <div class="planned-details">
           <div><el-icon><Connection /></el-icon><span>业务数据来源</span><strong>{{ source }}</strong></div>
-          <div><el-icon><CircleCheck /></el-icon><span>演示状态</span><strong>菜单与角色可见范围已配置</strong></div>
+          <div><el-icon><CircleCheck /></el-icon><span>功能状态</span><strong>页面设计中</strong></div>
         </div>
-        <p class="planned-note">正式交付时将接入鉴权接口，并按供应商、角色和业务主体限制可查询的数据。</p>
+        <p class="planned-note">功能开放后按角色权限查看和处理业务数据。</p>
       </div>
     </section>
   </div>

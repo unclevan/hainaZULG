@@ -21,7 +21,7 @@ function restoreDefaults() {
 
 async function clearBrowserCache() {
   try {
-    await ElMessageBox.confirm("将清除当前浏览器的 SCC 演示资料、页签和页面设置，并返回演示登录页。", "清空前端缓存", {
+    await ElMessageBox.confirm("将清除当前浏览器的页面数据、页签和外观设置，并返回登录页。", "清除本地缓存", {
       type: "warning", confirmButtonText: "确认清空", cancelButtonText: "取消"
     });
     clearDemoCache();
@@ -35,7 +35,7 @@ async function clearBrowserCache() {
 
 <template>
   <el-drawer v-model="visible" title="系统配置" size="min(370px, 100vw)" class="system-settings-drawer">
-    <div class="settings-intro">这些设置仅影响当前浏览器的前端展示。</div>
+    <div class="settings-intro">这些设置仅影响当前设备。</div>
 
     <section class="settings-section">
       <h3>主题色</h3>
@@ -66,7 +66,7 @@ async function clearBrowserCache() {
     <template #footer>
       <div class="settings-footer">
         <el-button @click="restoreDefaults">恢复默认设置</el-button>
-        <el-button type="danger" plain :icon="Delete" @click="clearBrowserCache">清空前端缓存</el-button>
+        <el-button type="danger" plain :icon="Delete" @click="clearBrowserCache">清除本地缓存</el-button>
       </div>
     </template>
   </el-drawer>

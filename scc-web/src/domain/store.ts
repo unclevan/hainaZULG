@@ -4,7 +4,7 @@ import { seedData } from "./seed";
 import type { Contact, DemoData, DemoRole, Qualification, SubAccount, Supplier } from "./types";
 import { defaultRole, portal, roleBelongsToPortal } from "@/shared/portal";
 
-const DATA_KEY = "haina-scc-demo-v1";
+const DATA_KEY = "haina-scc-data-v2";
 const SESSION_KEY = `haina-${portal}-session-v2`;
 export function clearDemoCache() {
   localStorage.removeItem(DATA_KEY);

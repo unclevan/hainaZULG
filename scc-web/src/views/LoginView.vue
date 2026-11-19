@@ -14,8 +14,15 @@ const router = useRouter();
 const store = useDemoStore();
 const tabs = useTabsStore();
 const role = ref<DemoRole>(defaultRole);
-const account = ref(portal === "psi" ? "admin.demo" : "0004700");
-const password = ref("demo2027");
+const accountForRole: Record<DemoRole, string> = {
+  supplier: "0004700",
+  supplier_finance: "13800000001",
+  reviewer: "reviewer",
+  finance: "finance",
+  admin: "admin"
+};
+const account = ref(accountForRole[defaultRole]);
+const password = ref("Haina2027");
 const smsCode = ref("");
 const codeSent = ref(false);
 const allOptions: { value: DemoRole; label: string; hint: string }[] = [
@@ -28,19 +35,19 @@ const allOptions: { value: DemoRole; label: string; hint: string }[] = [
 const options = allOptions.filter(item => portalRoles.includes(item.value));
 function choose(value: DemoRole) {
   role.value = value;
-  account.value = value === "supplier" ? "0004700" : value === "supplier_finance" ? "13800000001" : value === "reviewer" ? "reviewer.demo" : value === "finance" ? "finance.demo" : "admin.demo";
-  password.value = "demo2027";
+  account.value = accountForRole[value];
+  password.value = "Haina2027";
   smsCode.value = "";
   codeSent.value = false;
 }
-function sendCode() { codeSent.value = true; ElMessage.success("演示验证码：123456（未发送真实短信）"); }
+function sendCode() { codeSent.value = true; ElMessage.success("验证码：123456"); }
 function enter() {
-  if (!account.value || !password.value) { ElMessage.warning("请填写演示账号和密码"); return; }
-  if (isSupplierRole(role.value) && codeSent.value && smsCode.value !== "123456") { ElMessage.warning("演示验证码为 123456"); return; }
+  if (!account.value || !password.value) { ElMessage.warning("请填写账号和密码"); return; }
+  if (isSupplierRole(role.value) && codeSent.value && smsCode.value !== "123456") { ElMessage.warning("验证码不正确"); return; }
   store.setRole(role.value);
   tabs.reset();
   router.push("/overview");
-  ElMessage.success("已进入前端演示环境");
+  ElMessage.success("登录成功");
 }
 </script>
 
@@ -55,16 +62,14 @@ function enter() {
       <div class="login-foot"><SiteCopyright dark /></div>
     </div>
     <div class="login-right"><div class="login-panel">
-      <div class="login-meta"><span class="demo-pulse"></span> 前端演示环境</div>
       <h2>欢迎使用海纳 {{ portalName }}</h2><p class="login-subtitle">{{ portal === 'psi' ? '业主管理、采购审核和财务人员从这里进入' : '供应商主账号与子账号从这里进入' }}</p>
       <div class="role-tabs" :class="{ 'role-tabs-two': options.length === 2 }"><button v-for="item in options" :key="item.value" :class="{ selected: role === item.value }" @click="choose(item.value)"><strong>{{ item.label }}</strong><small>{{ item.hint }}</small></button></div>
-      <label class="login-label">{{ role === "supplier" ? "供应商编码" : role === "supplier_finance" ? "子账号手机号" : "演示账号" }}</label>
+      <label class="login-label">{{ role === "supplier" ? "供应商编码" : role === "supplier_finance" ? "子账号手机号" : "账号" }}</label>
       <el-input v-model="account" size="large" :prefix-icon="User" placeholder="请输入账号" />
       <label class="login-label">密码</label>
       <el-input v-model="password" size="large" :prefix-icon="Lock" type="password" show-password placeholder="请输入密码" @keyup.enter="enter" />
-      <template v-if="isSupplierRole(role)"><label class="login-label">短信验证 <span class="optional">原型演示</span></label><div class="sms-row"><el-input v-model="smsCode" size="large" :prefix-icon="Message" placeholder="点击右侧获取演示验证码" /><el-button size="large" @click="sendCode">获取验证码</el-button></div><p v-if="codeSent" class="sms-hint">演示验证码 123456；真实短信将在后端接入后启用。</p></template>
-      <el-button type="primary" size="large" class="login-submit" @click="enter">进入演示平台 <el-icon><ArrowRight /></el-icon></el-button>
-      <div class="login-note">当前为可交互原型。账号、密码、短信、上传和审核均使用模拟数据，不连接真实业务系统。</div>
+      <template v-if="isSupplierRole(role)"><label class="login-label">短信验证</label><div class="sms-row"><el-input v-model="smsCode" size="large" :prefix-icon="Message" placeholder="请输入验证码" /><el-button size="large" @click="sendCode">获取验证码</el-button></div><p v-if="codeSent" class="sms-hint">验证码已显示在页面提示中。</p></template>
+      <el-button type="primary" size="large" class="login-submit" @click="enter">登录 <el-icon><ArrowRight /></el-icon></el-button>
     </div></div>
   </div>
 </template>

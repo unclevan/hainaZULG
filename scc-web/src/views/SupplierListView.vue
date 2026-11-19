@@ -27,14 +27,14 @@ function createSupplier() {
   const result = store.addSupplier({ name: createForm.name.trim(), category: createForm.category, creditCode: createForm.creditCode.trim(), phone: createForm.phone.trim() });
   dialogOpen.value = false;
   Object.assign(createForm, { name: "", category: "食品经销", creditCode: "", phone: "" });
-  ElMessage.success(`演示供应商 ${result.code} 已创建`);
+  ElMessage.success(`供应商 ${result.code} 已创建`);
   router.push(`/suppliers/${result.id}`);
 }
 function exportDemo() {
   const lines = ["供应商编码,供应商名称,经营类型,年度更新状态,资料完整度", ...filtered.value.map(s => `${s.code},${s.name},${s.category},${s.submissionStatus},${s.completion}%`)];
   const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
-  const link = document.createElement("a"); link.href = url; link.download = "SCC供应商名录-演示.csv"; link.click(); URL.revokeObjectURL(url);
+  const link = document.createElement("a"); link.href = url; link.download = "供应商名录.csv"; link.click(); URL.revokeObjectURL(url);
 }
 </script>
 
@@ -44,11 +44,11 @@ function exportDemo() {
     <el-button v-if="store.role === 'admin'" type="primary" @click="dialogOpen = true"><el-icon><Plus /></el-icon> 新增供应商</el-button>
   </PageHeading>
   <div class="list-insights"><div class="insight"><span>供应商总数</span><strong>{{ store.suppliers.length }}</strong><small>家合作供应商</small></div><div class="insight"><span>已提交</span><strong>{{ store.suppliers.filter(s => s.submissionStatus === 'pending' || s.submissionStatus === 'approved').length }}</strong><small>含待审核与已通过</small></div><div class="insight"><span>待补正</span><strong>{{ store.suppliers.filter(s => s.submissionStatus === 'returned').length }}</strong><small>需供应商重新提交</small></div></div>
-  <section class="surface"><div class="surface-header"><div><h2>供应商列表</h2><p>演示数据 · 编码与年度状态均可检索</p></div><span class="muted small-text">共 {{ filtered.length }} 条</span></div>
+  <section class="surface"><div class="surface-header"><div><h2>供应商列表</h2><p>按编码、名称或年度状态查找供应商</p></div><span class="muted small-text">共 {{ filtered.length }} 条</span></div>
     <div class="toolbar"><el-input v-model="keyword" :prefix-icon="Search" clearable placeholder="搜索名称、编码或统一社会信用代码" style="width: 300px" /><el-select v-model="filterStatus" placeholder="年度更新状态" clearable style="width: 156px"><el-option label="未开始" value="not_started" /><el-option label="草稿中" value="draft" /><el-option label="待审核" value="pending" /><el-option label="待补正" value="returned" /><el-option label="已通过" value="approved" /></el-select><div class="toolbar-spacer"></div><el-button text @click="keyword = ''; filterStatus = ''">清空筛选</el-button></div>
     <div class="table-wrap"><el-table :data="paged" row-key="id" style="width: 100%" empty-text="没有符合条件的供应商"><el-table-column label="供应商" min-width="240"><template #default="{ row }"><div class="supplier-cell"><span class="supplier-icon">{{ row.name.slice(0, 1) }}</span><div><strong class="text-link" @click="router.push(`/suppliers/${row.id}`)">{{ row.name }}</strong><small>企业资料 · {{ row.category }}</small></div></div></template></el-table-column><el-table-column prop="code" label="供应商编码" width="140"><template #default="{ row }"><span class="code-text">{{ row.code }}</span></template></el-table-column><el-table-column prop="category" label="经营类型" width="120" /><el-table-column label="年度状态" width="120"><template #default="{ row }"><StatusPill :value="row.submissionStatus" /></template></el-table-column><el-table-column label="资料完整度" width="160"><template #default="{ row }"><div class="progress-cell"><el-progress :percentage="row.completion" :stroke-width="6" :show-text="false" /><span>{{ row.completion }}%</span></div></template></el-table-column><el-table-column prop="lastUpdated" label="最近更新" width="125" /><el-table-column label="操作" width="120" fixed="right"><template #default="{ row }"><el-button link type="primary" @click="router.push(`/suppliers/${row.id}`)">查看档案</el-button></template></el-table-column></el-table></div><ResultListFooter v-model:page="currentPage" :total="filtered.length" />
   </section>
-  <el-dialog v-model="dialogOpen" title="新增供应商 · 演示" width="520px"><div class="info-note" style="margin-bottom: 19px">系统将按旧规则生成七位供应商编码；正式生成须以生产数据核准的序列为准。</div><el-form label-position="top"><el-form-item label="供应商名称" required><el-input v-model="createForm.name" placeholder="请输入企业全称" /></el-form-item><el-form-item label="经营类型"><el-select v-model="createForm.category" style="width: 100%"><el-option label="食品经销" value="食品经销" /><el-option label="食品生产" value="食品生产" /><el-option label="百货" value="百货" /><el-option label="综合" value="综合" /></el-select></el-form-item><el-form-item label="统一社会信用代码"><el-input v-model="createForm.creditCode" placeholder="请输入统一社会信用代码" /></el-form-item><el-form-item label="联系电话"><el-input v-model="createForm.phone" placeholder="请输入联系电话" /></el-form-item></el-form><template #footer><el-button @click="dialogOpen = false">取消</el-button><el-button type="primary" @click="createSupplier">创建演示供应商</el-button></template></el-dialog>
+  <el-dialog v-model="dialogOpen" title="新增供应商" width="520px"><div class="info-note" style="margin-bottom: 19px">新增供应商将按现行编码规则分配七位供应商编码。</div><el-form label-position="top"><el-form-item label="供应商名称" required><el-input v-model="createForm.name" placeholder="请输入企业全称" /></el-form-item><el-form-item label="经营类型"><el-select v-model="createForm.category" style="width: 100%"><el-option label="食品经销" value="食品经销" /><el-option label="食品生产" value="食品生产" /><el-option label="百货" value="百货" /><el-option label="综合" value="综合" /></el-select></el-form-item><el-form-item label="统一社会信用代码"><el-input v-model="createForm.creditCode" placeholder="请输入统一社会信用代码" /></el-form-item><el-form-item label="联系电话"><el-input v-model="createForm.phone" placeholder="请输入联系电话" /></el-form-item></el-form><template #footer><el-button @click="dialogOpen = false">取消</el-button><el-button type="primary" @click="createSupplier">创建供应商</el-button></template></el-dialog>
   </div>
 </template>
 

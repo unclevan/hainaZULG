@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { ArrowDown, Bell, Box, Briefcase, ChatLineSquare, Clock, Close, Document, DocumentChecked, DocumentCopy, EditPen, Files, Fold, Goods, House, Key, List, Lock, Memo, Menu, Money, Notification, Search, Setting, Tickets, TrendCharts, User, UserFilled, Van } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
+import { ArrowDown, Bell, Box, Briefcase, ChatLineSquare, Clock, Close, Document, DocumentChecked, DocumentCopy, EditPen, Files, Goods, House, Key, List, Lock, Memo, Menu, Money, Notification, Search, Setting, Tickets, TrendCharts, User, UserFilled, Van } from "@element-plus/icons-vue";
 import { useDemoStore } from "@/domain/store";
 import SiteCopyright from "@/shared/SiteCopyright.vue";
 import SystemSettingsPanel from "@/shared/SystemSettingsPanel.vue";
@@ -55,17 +55,7 @@ function handleAccountCommand(command: DemoRole | "login") {
   tabs.reset();
   mobileOpen.value = false;
   router.push("/overview");
-  ElMessage.success(`已切换至${roleLabels[role]}演示视角`);
-}
-async function resetDemo() {
-  try {
-    await ElMessageBox.confirm("将清除本浏览器内所有演示编辑，恢复初始数据。", "重置演示数据", { type: "warning", confirmButtonText: "确认重置", cancelButtonText: "取消" });
-    store.reset();
-    access.reset();
-    tabs.reset();
-    router.push("/overview");
-    ElMessage.success("演示数据已恢复");
-  } catch { /* cancelled */ }
+  ElMessage.success(`已切换至${roleLabels[role]}`);
 }
 </script>
 
@@ -89,10 +79,6 @@ async function resetDemo() {
           </div>
         </section>
       </nav>
-      <div class="sidebar-bottom">
-        <div v-if="!collapsed" class="sidebar-help"><el-icon><Setting /></el-icon><div><strong>原型演示环境</strong><span>数据仅保存在当前浏览器</span></div></div>
-        <button class="reset-button" @click="resetDemo"><el-icon><Fold /></el-icon><span v-if="!collapsed">重置演示数据</span></button>
-      </div>
     </aside>
 
     <div class="app-body">
@@ -103,19 +89,18 @@ async function resetDemo() {
           <div v-if="appearance.settings.showBreadcrumb" class="breadcrumb"><span>海纳 {{ portalName }}</span><i>/</i><strong>{{ String(route.meta.title || "工作台") }}</strong></div>
         </div>
         <div class="topbar-actions">
-          <span class="demo-chip"><span class="demo-pulse"></span> 演示模式</span>
           <el-tooltip content="全局搜索将在后续版本接入" placement="bottom"><button class="icon-button soft global-search-button" aria-label="搜索"><el-icon><Search /></el-icon></button></el-tooltip>
           <el-badge :value="store.pendingCount" :hidden="isSupplierRole(store.role) || !store.pendingCount" class="notice-badge"><button class="icon-button soft" aria-label="待办" @click="router.push(isSupplierRole(store.role) ? '/overview' : '/reviews')"><el-icon><Bell /></el-icon></button></el-badge>
           <el-tooltip content="系统配置" placement="bottom"><button class="icon-button soft settings-button" aria-label="打开系统配置" @click="settingsOpen = true"><el-icon><Setting /></el-icon></button></el-tooltip>
           <el-dropdown trigger="click" @command="handleAccountCommand">
             <button class="account-switch"><span class="avatar"><el-icon><User /></el-icon></span><span class="account-copy"><strong>{{ roleLabel }}</strong><small>{{ isSupplierRole(store.role) ? store.activeSupplier?.name : "浙江大学后勤集团" }}</small></span><el-icon><ArrowDown /></el-icon></button>
             <template #dropdown><el-dropdown-menu>
-              <el-dropdown-item v-if="portal === 'psi'" command="admin">业主管理员视角</el-dropdown-item>
-              <el-dropdown-item v-if="portal === 'psi'" command="reviewer">采购审核员视角</el-dropdown-item>
-              <el-dropdown-item v-if="portal === 'psi'" command="finance">业主财务人员视角</el-dropdown-item>
-              <el-dropdown-item v-if="portal === 'scc'" command="supplier">供应商主账号视角</el-dropdown-item>
-              <el-dropdown-item v-if="portal === 'scc'" command="supplier_finance">供应商财务子账号视角</el-dropdown-item>
-              <el-dropdown-item command="login" divided>返回演示登录页</el-dropdown-item>
+              <el-dropdown-item v-if="portal === 'psi'" command="admin">业主管理员</el-dropdown-item>
+              <el-dropdown-item v-if="portal === 'psi'" command="reviewer">采购审核员</el-dropdown-item>
+              <el-dropdown-item v-if="portal === 'psi'" command="finance">业主财务人员</el-dropdown-item>
+              <el-dropdown-item v-if="portal === 'scc'" command="supplier">供应商主账号</el-dropdown-item>
+              <el-dropdown-item v-if="portal === 'scc'" command="supplier_finance">供应商财务子账号</el-dropdown-item>
+              <el-dropdown-item command="login" divided>退出登录</el-dropdown-item>
             </el-dropdown-menu></template>
           </el-dropdown>
         </div>

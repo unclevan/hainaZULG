@@ -11,10 +11,10 @@ function reset() { access.reset(); ElMessage.success("已恢复默认角色菜�
 
 <template>
   <div>
-    <PageHeading eyebrow="SYSTEM / ACCESS" title="角色与菜单权限" description="按角色设置菜单可见范围。当前演示配置保存在本浏览器，正式系统将由业主管理员统一配置并由后端鉴权。">
+    <PageHeading eyebrow="SYSTEM / ACCESS" title="角色与菜单权限" description="按角色配置可访问的页面与菜单。">
       <el-button @click="reset">恢复默认配置</el-button>
     </PageHeading>
-    <el-alert title="演示权限说明" description="开关会立即影响左侧菜单及页面访问。业主管理员权限固定；工作台对所有角色可见。正式交付还需配置按钮操作权限和供应商数据范围。" type="info" :closable="false" show-icon class="role-alert" />
+    <el-alert title="权限配置说明" description="调整后会影响左侧菜单及页面访问。业主管理员权限固定；工作台对所有角色可见。" type="info" :closable="false" show-icon class="role-alert" />
     <section class="surface role-card">
       <div class="role-table-wrap"><table class="role-table"><thead><tr><th>菜单分组 / 页面</th><th v-for="role in editableRoles" :key="role">{{ roleLabels[role] }}</th></tr></thead>
         <tbody v-for="group in groups" :key="group.title"><tr class="group-row"><td :colspan="editableRoles.length + 1">{{ group.title }}</td></tr>

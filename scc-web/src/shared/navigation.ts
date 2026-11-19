@@ -45,7 +45,7 @@ export const navigation: NavItem[] = [
   { title: "历史发票及付款", path: "/archive/invoices-payments", group: "同力商贸历史数据", icon: "Clock", description: "原同力商贸历史发票和付款，只读归档", roles: ["admin", "finance", "supplier", "supplier_finance"], status: "planned" },
   { title: "历史发票录入", path: "/archive/invoice-entry", group: "同力商贸历史数据", icon: "Clock", description: "原 EDI 历史发票记录，只读查看，不再新增", roles: ["admin", "finance", "supplier", "supplier_finance"], status: "planned" },
   { title: "账号管理", path: "/accounts", group: "系统设置", icon: "UserFilled", description: "业主开通主账号，供应商主账号管理子账号", roles: ["admin", "supplier"], status: "ready" },
-  { title: "角色与菜单权限", path: "/settings/roles", group: "系统设置", icon: "Lock", description: "演示角色可见菜单配置", roles: ["admin"], status: "ready" },
+  { title: "角色与菜单权限", path: "/settings/roles", group: "系统设置", icon: "Lock", description: "配置角色可访问的菜单", roles: ["admin"], status: "ready" },
   { title: "通知管理", path: "/settings/notices", group: "系统设置", icon: "Bell", description: "业主发布业务通知", roles: ["admin"], status: "planned" },
   { title: "公告管理", path: "/settings/announcements", group: "系统设置", icon: "Notification", description: "业主维护平台公告", roles: ["admin"], status: "planned" },
   { title: "首页弹窗管理", path: "/settings/home-popup", group: "系统设置", icon: "ChatLineSquare", description: "业主维护登录后提示弹窗", roles: ["admin"], status: "planned" },
