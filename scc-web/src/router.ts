@@ -1,6 +1,8 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import AppShell from "@/shared/AppShell.vue";
 import { useDemoStore } from "@/domain/store";
+import { useAccessStore } from "@/shared/access";
+import { navigation } from "@/shared/navigation";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -17,7 +19,9 @@ const router = createRouter({
         { path: "my/profile", component: () => import("@/views/ProfileView.vue"), meta: { title: "年度资料更新" } },
         { path: "qualifications", component: () => import("@/views/QualificationsView.vue"), meta: { title: "资质证照" } },
         { path: "accounts", component: () => import("@/views/AccountsView.vue"), meta: { title: "账号管理" } },
-        { path: "reviews", component: () => import("@/views/ReviewsView.vue"), meta: { title: "资料审核" } }
+        { path: "reviews", component: () => import("@/views/ReviewsView.vue"), meta: { title: "资料审核" } },
+        { path: "settings/roles", component: () => import("@/views/RolePermissionsView.vue"), meta: { title: "角色与菜单权限" } },
+        ...navigation.filter(item => item.status === "planned").map(item => ({ path: item.path.slice(1), component: () => import("@/views/PlannedView.vue"), meta: { title: item.title } }))
       ]
     },
     { path: "/:pathMatch(.*)*", redirect: "/overview" }
@@ -28,8 +32,7 @@ router.beforeEach(to => {
   document.title = `${String(to.meta.title || "供应链协同")} · 海纳 SCC`;
   const role = useDemoStore().role;
   if (to.path === "/login") return;
-  if (role === "supplier" && (to.path === "/suppliers" || to.path.startsWith("/suppliers/") || to.path === "/reviews")) return "/overview";
-  if (role === "reviewer" && (to.path === "/accounts" || to.path === "/my/profile")) return "/overview";
-  if (role === "admin" && to.path === "/my/profile") return "/overview";
+  const menuPath = to.path.startsWith("/suppliers/") ? "/suppliers" : to.path;
+  if (!useAccessStore().canVisit(role, menuPath)) return "/overview";
 });
 export default router;

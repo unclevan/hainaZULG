@@ -5,6 +5,7 @@ import { Check, Delete, RefreshRight } from "@element-plus/icons-vue";
 import { clearAppearanceCache, themeColors, useAppearanceStore } from "./appearance";
 import { clearTabsCache, useTabsStore } from "./tabs";
 import { clearDemoCache } from "@/domain/store";
+import { clearAccessCache } from "./access";
 
 const props = defineProps<{ modelValue: boolean }>();
 const emit = defineEmits<{ "update:modelValue": [value: boolean] }>();
@@ -24,6 +25,7 @@ async function clearBrowserCache() {
       type: "warning", confirmButtonText: "确认清空", cancelButtonText: "取消"
     });
     clearDemoCache();
+    clearAccessCache();
     clearTabsCache();
     clearAppearanceCache();
     window.location.assign(`${import.meta.env.BASE_URL}#/login`);

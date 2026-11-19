@@ -7,6 +7,7 @@ import { useDemoStore } from "@/domain/store";
 import SiteCopyright from "@/shared/SiteCopyright.vue";
 import { useTabsStore } from "@/shared/tabs";
 import type { DemoRole } from "@/domain/types";
+import { isSupplierRole } from "@/shared/navigation";
 
 const router = useRouter();
 const store = useDemoStore();
@@ -17,13 +18,15 @@ const password = ref("demo2027");
 const smsCode = ref("");
 const codeSent = ref(false);
 const options: { value: DemoRole; label: string; hint: string }[] = [
-  { value: "supplier", label: "供应商", hint: "资料填报与子账号" },
+  { value: "supplier", label: "供应商主账号", hint: "资料、订单与财务" },
+  { value: "supplier_finance", label: "供应商财务", hint: "财务子账号" },
   { value: "reviewer", label: "采购审核", hint: "资料审核与证照" },
-  { value: "admin", label: "业主管理", hint: "账号开通与名录" }
+  { value: "finance", label: "业主财务", hint: "对账与发票" },
+  { value: "admin", label: "业主管理", hint: "菜单与权限配置" }
 ];
 function choose(value: DemoRole) {
   role.value = value;
-  account.value = value === "supplier" ? "0004700" : value === "reviewer" ? "reviewer.demo" : "admin.demo";
+  account.value = value === "supplier" ? "0004700" : value === "supplier_finance" ? "13800000001" : value === "reviewer" ? "reviewer.demo" : value === "finance" ? "finance.demo" : "admin.demo";
   password.value = "demo2027";
   smsCode.value = "";
   codeSent.value = false;
@@ -31,7 +34,7 @@ function choose(value: DemoRole) {
 function sendCode() { codeSent.value = true; ElMessage.success("演示验证码：123456（未发送真实短信）"); }
 function enter() {
   if (!account.value || !password.value) { ElMessage.warning("请填写演示账号和密码"); return; }
-  if (role.value === "supplier" && codeSent.value && smsCode.value !== "123456") { ElMessage.warning("演示验证码为 123456"); return; }
+  if (isSupplierRole(role.value) && codeSent.value && smsCode.value !== "123456") { ElMessage.warning("演示验证码为 123456"); return; }
   store.setRole(role.value);
   tabs.reset();
   router.push("/overview");
@@ -51,13 +54,13 @@ function enter() {
     </div>
     <div class="login-right"><div class="login-panel">
       <div class="login-meta"><span class="demo-pulse"></span> 前端演示环境</div>
-      <h2>欢迎使用海纳 SCC</h2><p class="login-subtitle">选择一个角色，体验供应商信息管理流程</p>
+      <h2>欢迎使用海纳 SCC</h2><p class="login-subtitle">选择角色，体验供应商资料、订单与财务协同菜单</p>
       <div class="role-tabs"><button v-for="item in options" :key="item.value" :class="{ selected: role === item.value }" @click="choose(item.value)"><strong>{{ item.label }}</strong><small>{{ item.hint }}</small></button></div>
-      <label class="login-label">{{ role === "supplier" ? "供应商编码 / 子账号手机号" : "演示账号" }}</label>
+      <label class="login-label">{{ role === "supplier" ? "供应商编码" : role === "supplier_finance" ? "子账号手机号" : "演示账号" }}</label>
       <el-input v-model="account" size="large" :prefix-icon="User" placeholder="请输入账号" />
       <label class="login-label">密码</label>
       <el-input v-model="password" size="large" :prefix-icon="Lock" type="password" show-password placeholder="请输入密码" @keyup.enter="enter" />
-      <template v-if="role === 'supplier'"><label class="login-label">短信验证 <span class="optional">原型演示</span></label><div class="sms-row"><el-input v-model="smsCode" size="large" :prefix-icon="Message" placeholder="点击右侧获取演示验证码" /><el-button size="large" @click="sendCode">获取验证码</el-button></div><p v-if="codeSent" class="sms-hint">演示验证码 123456；真实短信将在后端接入后启用。</p></template>
+      <template v-if="isSupplierRole(role)"><label class="login-label">短信验证 <span class="optional">原型演示</span></label><div class="sms-row"><el-input v-model="smsCode" size="large" :prefix-icon="Message" placeholder="点击右侧获取演示验证码" /><el-button size="large" @click="sendCode">获取验证码</el-button></div><p v-if="codeSent" class="sms-hint">演示验证码 123456；真实短信将在后端接入后启用。</p></template>
       <el-button type="primary" size="large" class="login-submit" @click="enter">进入演示平台 <el-icon><ArrowRight /></el-icon></el-button>
       <div class="login-note">当前为可交互原型。账号、密码、短信、上传和审核均使用模拟数据，不连接真实业务系统。</div>
     </div></div>

@@ -1,4 +1,4 @@
-export type DemoRole = "admin" | "reviewer" | "supplier";
+export type DemoRole = "admin" | "reviewer" | "finance" | "supplier" | "supplier_finance";
 export type SubmissionStatus = "not_started" | "draft" | "pending" | "returned" | "approved";
 export type QualificationStatus = "valid" | "expiring" | "expired" | "pending";
 
