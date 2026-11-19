@@ -17,6 +17,6 @@ pnpm install --frozen-lockfile
 pnpm build
 ```
 
-`dist/` 包含四个入口，可整体发布为静态站点。Cloudflare Pages 连接 GitHub 私有仓库时，仓库根目录即本目录，构建命令 `pnpm build`，输出目录 `dist`。推送 `main` 后可自动更新公开演示站；实际站点域名由托管平台创建时确定。
+`dist/` 包含四个入口，可整体发布为静态站点。默认构建适用于站点根路径。GitHub Pages 使用项目路径 `/hainaZULG/`，构建命令为 `DEMO_BASE_PATH=/hainaZULG/ pnpm build`。仓库中的 `.github/workflows/pages.yml` 在推送 `main` 后构建并发布。首次使用需在仓库 Settings → Pages 中将 Source 设为 GitHub Actions；私有仓库发布 Pages 需要支持该功能的 GitHub 付费计划。发布后入口为 `https://unclevan.github.io/hainaZULG/`。
 
 本仓库不包含 `../docs/` 文档仓库、旧 EDI 数据、OSS 凭证或后端代码。演示登录、短信、审核和附件均使用浏览器本地模拟数据。视觉约定见 [STYLE_GUIDE.md](STYLE_GUIDE.md)。
