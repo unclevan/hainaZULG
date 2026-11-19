@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "pnpm --filter haina-scc-web build && node scripts/assemble-demo.mjs",
+    "build": "VITE_APP_PORTAL=scc pnpm --filter haina-scc-web build && VITE_APP_PORTAL=psi DEMO_APP=psi pnpm --filter haina-scc-web build && node scripts/assemble-demo.mjs",
     "build:demo": "pnpm build"
   },
   "engines": {

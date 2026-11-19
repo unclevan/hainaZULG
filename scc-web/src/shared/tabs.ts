@@ -1,7 +1,8 @@
 import { ref, watch } from "vue";
 import { defineStore } from "pinia";
+import { portal } from "./portal";
 
-const STORAGE_KEY = "haina-scc-tabs-v1";
+const STORAGE_KEY = `haina-${portal}-tabs-v2`;
 const home = { path: "/overview", title: "工作台" };
 export interface WorkspaceTab { path: string; title: string }
 

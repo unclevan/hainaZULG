@@ -1,3 +1,5 @@
 # PSI 前端演示目录
 
-进销存管理服务（Purchasing, Sales and Inventory Management，PSI）的独立前端代码将在此建立。演示访问路径预留为 `/psi/`，当前仅有站点级预留页。
+进销存管理服务（Purchasing, Sales and Inventory Management，PSI）的运营入口已在 `/psi/` 开放。V0.8 演示从 `scc-web/` 的共享页面源码构建独立的 PSI 静态包，只允许业主管理员、采购审核员和业主财务人员登录，承接供应商名录、资料审核、主账号与角色权限等运营页面。
+
+这是原型阶段的共享源码和浏览器模拟数据。正式实现应抽取共用组件、建立 PSI 独立前端入口，并通过授权 API 与 SCC 协同；PSI 正式供应商主档及结算主数据不应因为前端共用而被复制到 SCC。

@@ -11,6 +11,7 @@ import { useTabsStore } from "@/shared/tabs";
 import type { DemoRole } from "@/domain/types";
 import { navigation, navigationGroups, roleLabels, isSupplierRole } from "@/shared/navigation";
 import { useAccessStore } from "@/shared/access";
+import { portal, portalName, roleBelongsToPortal } from "@/shared/portal";
 
 const store = useDemoStore();
 const route = useRoute();
@@ -49,6 +50,7 @@ function handleAccountCommand(command: DemoRole | "login") {
     return;
   }
   const role = command;
+  if (!roleBelongsToPortal(role)) return;
   store.setRole(role);
   tabs.reset();
   mobileOpen.value = false;
@@ -75,7 +77,7 @@ async function resetDemo() {
         <div v-if="appearance.settings.showLogo" class="brand-mark">海</div>
         <div v-if="!collapsed" class="brand-copy"><strong>海纳</strong><span>智慧零售管理平台</span></div>
       </div>
-      <div v-if="!collapsed" class="sidebar-caption">SUPPLY CHAIN COLLABORATION</div>
+      <div v-if="!collapsed" class="sidebar-caption">{{ portal === 'psi' ? 'PURCHASING · SALES · INVENTORY' : 'SUPPLY CHAIN COLLABORATION' }}</div>
       <nav class="side-nav-scroll" aria-label="主导航">
         <section v-for="group in visibleGroups" :key="group.title" class="nav-group">
           <div v-if="!collapsed" class="nav-section-label">{{ group.title }}</div>
@@ -98,7 +100,7 @@ async function resetDemo() {
         <div class="topbar-left">
           <button class="icon-button collapse-button" aria-label="切换侧栏" @click="collapsed = !collapsed"><el-icon><Menu /></el-icon></button>
           <button class="icon-button mobile-menu-button" aria-label="打开菜单" @click="mobileOpen = true"><el-icon><Menu /></el-icon></button>
-          <div v-if="appearance.settings.showBreadcrumb" class="breadcrumb"><span>海纳 SCC</span><i>/</i><strong>{{ String(route.meta.title || "工作台") }}</strong></div>
+          <div v-if="appearance.settings.showBreadcrumb" class="breadcrumb"><span>海纳 {{ portalName }}</span><i>/</i><strong>{{ String(route.meta.title || "工作台") }}</strong></div>
         </div>
         <div class="topbar-actions">
           <span class="demo-chip"><span class="demo-pulse"></span> 演示模式</span>
@@ -108,11 +110,11 @@ async function resetDemo() {
           <el-dropdown trigger="click" @command="handleAccountCommand">
             <button class="account-switch"><span class="avatar"><el-icon><User /></el-icon></span><span class="account-copy"><strong>{{ roleLabel }}</strong><small>{{ isSupplierRole(store.role) ? store.activeSupplier?.name : "浙江大学后勤集团" }}</small></span><el-icon><ArrowDown /></el-icon></button>
             <template #dropdown><el-dropdown-menu>
-              <el-dropdown-item command="admin">业主管理员视角</el-dropdown-item>
-              <el-dropdown-item command="reviewer">采购审核员视角</el-dropdown-item>
-              <el-dropdown-item command="finance">业主财务人员视角</el-dropdown-item>
-              <el-dropdown-item command="supplier">供应商主账号视角</el-dropdown-item>
-              <el-dropdown-item command="supplier_finance">供应商财务子账号视角</el-dropdown-item>
+              <el-dropdown-item v-if="portal === 'psi'" command="admin">业主管理员视角</el-dropdown-item>
+              <el-dropdown-item v-if="portal === 'psi'" command="reviewer">采购审核员视角</el-dropdown-item>
+              <el-dropdown-item v-if="portal === 'psi'" command="finance">业主财务人员视角</el-dropdown-item>
+              <el-dropdown-item v-if="portal === 'scc'" command="supplier">供应商主账号视角</el-dropdown-item>
+              <el-dropdown-item v-if="portal === 'scc'" command="supplier_finance">供应商财务子账号视角</el-dropdown-item>
               <el-dropdown-item command="login" divided>返回演示登录页</el-dropdown-item>
             </el-dropdown-menu></template>
           </el-dropdown>

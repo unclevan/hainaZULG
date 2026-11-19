@@ -3,6 +3,7 @@ import AppShell from "@/shared/AppShell.vue";
 import { useDemoStore } from "@/domain/store";
 import { useAccessStore } from "@/shared/access";
 import { navigation } from "@/shared/navigation";
+import { portalName, roleBelongsToPortal } from "@/shared/portal";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -29,9 +30,10 @@ const router = createRouter({
 });
 
 router.beforeEach(to => {
-  document.title = `${String(to.meta.title || "供应链协同")} · 海纳 SCC`;
+  document.title = `${String(to.meta.title || "工作台")} · 海纳 ${portalName}`;
   const role = useDemoStore().role;
   if (to.path === "/login") return;
+  if (!roleBelongsToPortal(role)) return "/login";
   const menuPath = to.path.startsWith("/suppliers/") ? "/suppliers" : to.path;
   if (!useAccessStore().canVisit(role, menuPath)) return "/overview";
 });

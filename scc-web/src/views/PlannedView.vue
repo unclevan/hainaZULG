@@ -4,6 +4,7 @@ import { useRoute } from "vue-router";
 import { CircleCheck, Connection, Document } from "@element-plus/icons-vue";
 import { menuForPath } from "@/shared/navigation";
 import PageHeading from "@/shared/PageHeading.vue";
+import { portalName } from "@/shared/portal";
 
 const route = useRoute();
 const item = computed(() => menuForPath(route.path));
@@ -12,7 +13,7 @@ const source = computed(() => route.path.startsWith("/archive/") ? "原同力商
 
 <template>
   <div>
-    <PageHeading eyebrow="SCC / 功能规划" :title="item?.title || '功能规划'" :description="item?.description || '该功能正在规划中。'" />
+    <PageHeading :eyebrow="`${portalName} / 功能规划`" :title="item?.title || '功能规划'" :description="item?.description || '该功能正在规划中。'" />
     <section class="surface planned-card">
       <div class="planned-symbol"><el-icon><Document /></el-icon></div>
       <div class="planned-content">

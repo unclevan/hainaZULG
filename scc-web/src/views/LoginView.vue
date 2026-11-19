@@ -8,22 +8,24 @@ import SiteCopyright from "@/shared/SiteCopyright.vue";
 import { useTabsStore } from "@/shared/tabs";
 import type { DemoRole } from "@/domain/types";
 import { isSupplierRole } from "@/shared/navigation";
+import { defaultRole, portal, portalName, portalRoles } from "@/shared/portal";
 
 const router = useRouter();
 const store = useDemoStore();
 const tabs = useTabsStore();
-const role = ref<DemoRole>("supplier");
-const account = ref("0004700");
+const role = ref<DemoRole>(defaultRole);
+const account = ref(portal === "psi" ? "admin.demo" : "0004700");
 const password = ref("demo2027");
 const smsCode = ref("");
 const codeSent = ref(false);
-const options: { value: DemoRole; label: string; hint: string }[] = [
+const allOptions: { value: DemoRole; label: string; hint: string }[] = [
   { value: "supplier", label: "供应商主账号", hint: "资料、订单与财务" },
   { value: "supplier_finance", label: "供应商财务", hint: "财务子账号" },
   { value: "reviewer", label: "采购审核", hint: "资料审核与证照" },
   { value: "finance", label: "业主财务", hint: "对账与发票" },
   { value: "admin", label: "业主管理", hint: "菜单与权限配置" }
 ];
+const options = allOptions.filter(item => portalRoles.includes(item.value));
 function choose(value: DemoRole) {
   role.value = value;
   account.value = value === "supplier" ? "0004700" : value === "supplier_finance" ? "13800000001" : value === "reviewer" ? "reviewer.demo" : value === "finance" ? "finance.demo" : "admin.demo";
@@ -47,15 +49,15 @@ function enter() {
     <div class="login-left">
       <div class="login-brand"><span class="login-logo">海</span><span><strong>海纳</strong><small>智慧零售管理平台</small></span></div>
       <div class="login-center">
-        <div class="login-copy"><div class="login-kicker">HAINA · SUPPLY CHAIN</div><h1>让供应链协同<br />更清晰、更从容。</h1><p>面向供应商与采购团队的统一工作空间。<br />从企业资料更新开始，构建可靠的业务协作体验。</p></div>
+        <div class="login-copy"><div class="login-kicker">HAINA · {{ portal === 'psi' ? 'OPERATIONS' : 'SUPPLY CHAIN' }}</div><h1>{{ portal === 'psi' ? '让运营协同' : '让供应链协同' }}<br />更清晰、更从容。</h1><p>{{ portal === 'psi' ? '面向业主运营团队的统一工作空间。' : '面向供应商的业务协作门户。' }}<br />从企业资料更新开始，构建可靠的业务协作体验。</p></div>
         <div class="login-illustration"><div class="orb orb-one"></div><div class="orb orb-two"></div><div class="flow-card card-one"><span>01</span><strong>资料更新</strong><small>企业信息 · 联系人 · 证照</small></div><div class="flow-line"></div><div class="flow-card card-two"><span>02</span><strong>采购审核</strong><small>差异比对 · 审核留痕</small></div><div class="flow-line"></div><div class="flow-card card-three"><span>03</span><strong>协同生效</strong><small>年度资料 · 持续维护</small></div></div>
       </div>
       <div class="login-foot"><SiteCopyright dark /></div>
     </div>
     <div class="login-right"><div class="login-panel">
       <div class="login-meta"><span class="demo-pulse"></span> 前端演示环境</div>
-      <h2>欢迎使用海纳 SCC</h2><p class="login-subtitle">选择角色，体验供应商资料、订单与财务协同菜单</p>
-      <div class="role-tabs"><button v-for="item in options" :key="item.value" :class="{ selected: role === item.value }" @click="choose(item.value)"><strong>{{ item.label }}</strong><small>{{ item.hint }}</small></button></div>
+      <h2>欢迎使用海纳 {{ portalName }}</h2><p class="login-subtitle">{{ portal === 'psi' ? '业主管理、采购审核和财务人员从这里进入' : '供应商主账号与子账号从这里进入' }}</p>
+      <div class="role-tabs" :class="{ 'role-tabs-two': options.length === 2 }"><button v-for="item in options" :key="item.value" :class="{ selected: role === item.value }" @click="choose(item.value)"><strong>{{ item.label }}</strong><small>{{ item.hint }}</small></button></div>
       <label class="login-label">{{ role === "supplier" ? "供应商编码" : role === "supplier_finance" ? "子账号手机号" : "演示账号" }}</label>
       <el-input v-model="account" size="large" :prefix-icon="User" placeholder="请输入账号" />
       <label class="login-label">密码</label>
@@ -76,6 +78,7 @@ function enter() {
 .login-copy { max-width: 100%; }.login-kicker { color: #85c8fa; font-size: 11px; font-weight: 700; letter-spacing: .19em; text-transform: uppercase; }.login-copy h1 { margin: 17px 0 20px; font-size: clamp(38px,4vw,54px); line-height: 1.3; letter-spacing: -.035em; }.login-copy p { margin: 0; color: #a8c0d4; font-size: 14px; line-height: 2; }
 .login-illustration { position: relative; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 50px; }.flow-card { min-width: 145px; padding: 17px; border: 1px solid rgba(255,255,255,.13); border-radius: 12px; background: rgba(255,255,255,.08); backdrop-filter: blur(10px); }.flow-card span { display: block; color: #86c6f1; font: 700 10px ui-monospace,monospace; }.flow-card strong { display: block; margin: 8px 0 5px; font-size: 14px; }.flow-card small { color: #a3bfd3; font-size: 10px; white-space: nowrap; }.flow-line { width: 28px; border-top: 1px dashed #6fa9cb; }.login-foot { position: relative; z-index: 1; color: #7fa2bb; font-size: 11px; }
 .login-right { display: grid; place-items: center; padding: 48px 30px; }.login-panel { width: min(430px,100%); }.login-meta { display: flex; align-items: center; gap: 8px; color: #288659; font-size: 12px; font-weight: 600; }.login-panel h2 { margin: 18px 0 8px; color: #24374c; font-size: 29px; }.login-subtitle { margin: 0 0 26px; color: #8595a8; font-size: 13px; }.role-tabs { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; margin-bottom: 28px; }.role-tabs button { display: flex; flex-direction: column; gap: 5px; padding: 12px 9px; border: 1px solid #e3e9f0; border-radius: 9px; background: #fff; color: #4b5e73; text-align: left; }.role-tabs button.selected { border-color: #3688d7; background: #f0f7ff; color: #2169b7; box-shadow: 0 0 0 2px rgba(54,136,215,.08); }.role-tabs strong { font-size: 13px; }.role-tabs small { color: #94a2b3; font-size: 10px; white-space: nowrap; }.login-label { display: block; margin: 17px 0 8px; color: #516478; font-size: 12px; font-weight: 650; }.optional { float: right; color: #a3b0bf; font-weight: 400; }.sms-row { display: flex; gap: 9px; }.sms-row .el-input { flex: 1; }.sms-row .el-button { flex: 0 0 auto; }.sms-hint { margin: 6px 0 0; color: #2b8d69; font-size: 11px; }.login-submit { width: 100%; margin-top: 26px; height: 44px; font-weight: 650; }.login-submit .el-icon { margin-left: 8px; }.login-note { margin-top: 22px; padding: 12px 14px; border-radius: 8px; background: #f5f8fb; color: #93a0b0; font-size: 11px; line-height: 1.65; }
+.role-tabs.role-tabs-two { grid-template-columns: repeat(2, 1fr); }
 @media (max-width: 1180px) { .login-illustration { display: none; } }
 @media (max-width: 950px) { .login-page { grid-template-columns: 1fr; }.login-left { min-height: 320px; padding: 24px; }.login-center { padding: 32px 0; }.login-copy h1 { font-size: 30px; margin: 9px 0; }.login-copy p { font-size: 12px; }.login-illustration { display: none; }.login-right { padding: 35px 18px; } }
 </style>

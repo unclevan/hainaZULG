@@ -2,9 +2,10 @@ import { computed, ref, watch } from "vue";
 import { defineStore } from "pinia";
 import { seedData } from "./seed";
 import type { Contact, DemoData, DemoRole, Qualification, SubAccount, Supplier } from "./types";
+import { defaultRole, portal, roleBelongsToPortal } from "@/shared/portal";
 
 const DATA_KEY = "haina-scc-demo-v1";
-const SESSION_KEY = "haina-scc-session-v1";
+const SESSION_KEY = `haina-${portal}-session-v2`;
 export function clearDemoCache() {
   localStorage.removeItem(DATA_KEY);
   sessionStorage.removeItem(SESSION_KEY);
@@ -25,7 +26,7 @@ export const useDemoStore = defineStore("demo", () => {
   const savedSession = (() => {
     try { return JSON.parse(sessionStorage.getItem(SESSION_KEY) || "{}"); } catch { return {}; }
   })() as { role?: DemoRole; supplierId?: string };
-  const role = ref<DemoRole>(savedSession.role || "admin");
+  const role = ref<DemoRole>(savedSession.role && roleBelongsToPortal(savedSession.role) ? savedSession.role : defaultRole);
   const activeSupplierId = ref(savedSession.supplierId || "sup-1");
   const suppliers = computed(() => data.value.suppliers);
   const activeSupplier = computed(() => suppliers.value.find(item => item.id === activeSupplierId.value) || suppliers.value[0]);
@@ -39,7 +40,7 @@ export const useDemoStore = defineStore("demo", () => {
     role.value = nextRole;
     activeSupplierId.value = supplierId;
   }
-  function reset() { data.value = clone(seedData); role.value = "admin"; activeSupplierId.value = "sup-1"; }
+  function reset() { data.value = clone(seedData); role.value = defaultRole; activeSupplierId.value = "sup-1"; }
   function getSupplier(id: string) { return suppliers.value.find(item => item.id === id); }
   function updateSupplier(id: string, changes: Partial<Supplier>) {
     const supplier = getSupplier(id);
