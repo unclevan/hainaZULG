@@ -1,0 +1,7 @@
+packages:
+  - "scc-web"
+  - "psi-web"
+  - "pay-web"
+
+allowBuilds:
+  esbuild: true

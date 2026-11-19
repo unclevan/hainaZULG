@@ -1,0 +1,14 @@
+{
+  "name": "haina-demo-portal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm --filter haina-scc-web build && node scripts/assemble-demo.mjs",
+    "build:demo": "pnpm build"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.13.0",
+    "pnpm": ">=9"
+  }
+}
