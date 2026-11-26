@@ -7,6 +7,8 @@ export const roleLabels: Record<DemoRole, string> = {
 export const editableRoles: DemoRole[] = ["reviewer", "finance", "supplier", "supplier_finance"];
 export const isSupplierRole = (role: DemoRole) => role === "supplier" || role === "supplier_finance";
 export function roleCanOwnMenu(role: DemoRole, path: string) {
+  if (path === "/brand-qualifications") return role === "supplier";
+  if (path === "/brands") return role === "admin" || role === "reviewer";
   if (path === "/my/profile") return role === "supplier";
   if (path === "/accounts") return role === "admin" || role === "supplier";
   if (path === "/settings/roles" || path === "/settings/notices" || path === "/settings/announcements" || path === "/settings/home-popup") return role === "admin";
@@ -30,6 +32,8 @@ export const navigation: NavItem[] = [
   { title: "年度资料更新", path: "/my/profile", group: "供应商管理", icon: "Document", description: "本供应商企业资料与联系人", roles: ["supplier"], status: "ready" },
   { title: "资料审核", path: "/reviews", group: "供应商管理", icon: "DocumentChecked", description: "业主侧审核年度资料", roles: ["admin", "reviewer"], status: "ready" },
   { title: "资质证照", path: "/qualifications", group: "供应商管理", icon: "Files", description: "企业资质上传、查询和到期提醒", roles: ["admin", "reviewer", "supplier"], status: "ready" },
+  { title: "品牌资质", path: "/brand-qualifications", group: "供应商管理", icon: "Medal", description: "提交和维护本企业的品牌权属及供货授权", roles: ["supplier"], status: "ready" },
+  { title: "品牌档案", path: "/brands", group: "商品管理", icon: "Collection", description: "维护品牌档案和处理新品牌申请", roles: ["admin", "reviewer"], status: "ready" },
   { title: "商品资料查询", path: "/catalog/products", group: "资料查询", icon: "Goods", description: "查询本供应商商品和质检报告；商品主数据属于 PSI", roles: ["admin", "reviewer", "supplier"], status: "planned" },
   { title: "供应商库存查询", path: "/catalog/inventory", group: "资料查询", icon: "Box", description: "查询本供应商相关库存；库存主数据属于 PSI", roles: ["admin", "reviewer", "supplier"], status: "planned" },
   { title: "供应商销量查询", path: "/catalog/sales", group: "资料查询", icon: "TrendCharts", description: "查询授权范围内的本供应商商品销量；销售主数据属于 PSI", roles: ["admin", "reviewer", "supplier"], status: "planned" },
@@ -52,5 +56,5 @@ export const navigation: NavItem[] = [
   { title: "修改密码", path: "/settings/password", group: "系统设置", icon: "Key", description: "账号安全设置", roles: ["admin", "reviewer", "finance", "supplier", "supplier_finance"], status: "planned" }
 ];
 
-export const navigationGroups = ["工作台", "供应商管理", "资料查询", "订单管理", "财务管理", "同力商贸历史数据", "系统设置"];
+export const navigationGroups = ["工作台", "供应商管理", "商品管理", "资料查询", "订单管理", "财务管理", "同力商贸历史数据", "系统设置"];
 export const menuForPath = (path: string) => navigation.find(item => item.path === path);

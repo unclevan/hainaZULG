@@ -2,7 +2,7 @@
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { ArrowDown, Bell, Box, Briefcase, ChatLineSquare, Clock, Close, Document, DocumentChecked, DocumentCopy, EditPen, Files, Goods, House, Key, List, Lock, Memo, Menu, Money, Notification, Search, Setting, Tickets, TrendCharts, User, UserFilled, Van } from "@element-plus/icons-vue";
+import { ArrowDown, Bell, Box, Briefcase, ChatLineSquare, Clock, Close, Collection, Document, DocumentChecked, DocumentCopy, EditPen, Files, Goods, House, Key, List, Lock, Medal, Memo, Menu, Money, Notification, Search, Setting, Tickets, TrendCharts, User, UserFilled, Van } from "@element-plus/icons-vue";
 import { useDemoStore } from "@/domain/store";
 import SiteCopyright from "@/shared/SiteCopyright.vue";
 import SystemSettingsPanel from "@/shared/SystemSettingsPanel.vue";
@@ -26,7 +26,7 @@ const roleLabel = computed(() => roleLabels[store.role]);
 const visibleGroups = computed(() => navigationGroups.map(title => ({
   title, items: navigation.filter(item => item.group === title && access.canVisit(store.role, item.path))
 })).filter(group => group.items.length));
-const menuIcons = { Bell, Box, Briefcase, ChatLineSquare, Clock, Document, DocumentChecked, DocumentCopy, EditPen, Files, Goods, House, Key, List, Lock, Memo, Money, Notification, Tickets, TrendCharts, UserFilled, Van };
+const menuIcons = { Bell, Box, Briefcase, ChatLineSquare, Clock, Collection, Document, DocumentChecked, DocumentCopy, EditPen, Files, Goods, House, Key, List, Lock, Medal, Memo, Money, Notification, Tickets, TrendCharts, UserFilled, Van };
 const iconFor = (name: string) => menuIcons[name as keyof typeof menuIcons] || Document;
 const activePath = computed(() => route.path.startsWith("/suppliers/") ? "/suppliers" : route.path);
 watch(() => route.path, path => {
