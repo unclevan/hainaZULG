@@ -4,10 +4,12 @@ import { ElMessage } from "element-plus";
 import { useDemoStore } from "@/domain/store";
 import { businessDate, relationLabel, scopeLabel, useBrandStore, type BrandQualification, type BrandQualificationInput, type Evidence } from "@/domain/brands";
 import { downloadEvidence, removeEvidence, saveEvidence } from "@/domain/brandEvidence";
+import { useCategoryStore, type Category } from "@/domain/categories";
 
 const props = defineProps<{ mode: "supplier" | "review" | "profile"; supplierId?: string }>();
 const demo = useDemoStore();
 const store = useBrandStore();
+const categoryStore = useCategoryStore();
 const keyword = ref("");
 const filter = ref(props.mode === "review" ? "pending" : "");
 const open = ref(false);
@@ -27,6 +29,21 @@ const blank = (): BrandQualificationInput => ({
 });
 const form = reactive(blank());
 const scopeText = ref("");
+const legacyScopeNeedsRemap = ref(false);
+interface CategoryOption { value: string; label: string; disabled: boolean; children?: CategoryOption[] }
+const categoryProps = { multiple: true, checkStrictly: true, emitPath: false, value: "value", label: "label", children: "children" };
+const categoryOptions = computed(() => {
+  const rows = categoryStore.categories();
+  const descendants = (parentId: string): CategoryOption[] =>
+    rows.filter(row => row.parentId === parentId).map((row: Category) => {
+      const children = descendants(row.id);
+      return { value: row.id, label: `${row.name} (${row.code})`, disabled: !categoryStore.isSelectable(row.id), ...(children.length ? { children } : {}) };
+    });
+  return descendants("");
+});
+const scopeSummary = (item: BrandQualification) => item.scopeItems.length
+  ? item.scopeItems.map(value => item.scope === "category" ? categoryStore.path(value) || value : value).join("、")
+  : scopeLabel[item.scope];
 const rows = computed(() => store.data.qualifications.filter(item => {
   if (props.supplierId && item.supplierId !== props.supplierId) return false;
   if (filter.value && item.status !== filter.value) return false;
@@ -55,7 +72,9 @@ function edit(item?: BrandQualification) {
     validUntil: item.status === "returned" ? item.validUntil : "",
     evidence: item.status === "returned" ? [...item.evidence] : []
   } : blank());
-  scopeText.value = form.scopeItems.join("、");
+  legacyScopeNeedsRemap.value = item?.scope === "category" && item.scopeItems.some(id => !categoryStore.category(id)) || false;
+  if (item?.scope === "category") form.scopeItems = item.scopeItems.filter(id => !!categoryStore.category(id));
+  scopeText.value = item?.scope === "product" ? form.scopeItems.join("、") : "";
   files.value = [];
   if (fileInput.value) fileInput.value.value = "";
   open.value = true;
@@ -75,7 +94,9 @@ function onFiles(event: Event) {
 
 async function submit() {
   if (!props.supplierId || saving.value) return;
-  const scopeItems = [...new Set(scopeText.value.split(/[、，,\n]/).map(item => item.trim()).filter(Boolean))];
+  const scopeItems = form.scope === "category"
+    ? [...new Set(form.scopeItems)]
+    : [...new Set(scopeText.value.split(/[、，,\n]/).map(item => item.trim()).filter(Boolean))];
   const target = props.supplierId;
   const input = { ...form, scopeItems, evidence: [...form.evidence] };
   const sourceId = source.value?.id;
@@ -92,6 +113,12 @@ async function submit() {
     ElMessage.warning((error as Error)?.message || "保存证明材料失败");
   }
   finally { saving.value = false; }
+}
+
+function changeScope() {
+  form.scopeItems = [];
+  scopeText.value = "";
+  legacyScopeNeedsRemap.value = false;
 }
 
 function view(item: BrandQualification) {
@@ -154,7 +181,7 @@ async function download(item: Evidence) {
         <el-table-column label="品牌" min-width="120"><template #default="{ row }">{{ store.brandName(row.brandId) }} · V{{ row.version }}</template></el-table-column>
         <el-table-column label="主体关系" min-width="125"><template #default="{ row }">{{ relationLabel[row.relation as BrandQualification["relation"]] }}</template></el-table-column>
         <el-table-column v-if="mode !== 'profile'" label="供货范围" min-width="140" show-overflow-tooltip><template #default="{ row }">
-          {{ row.scopeItems.length ? row.scopeItems.join("、") : scopeLabel[row.scope as BrandQualification["scope"]] }}
+          {{ scopeSummary(row) }}
         </template></el-table-column>
         <el-table-column label="有效期至" min-width="105"><template #default="{ row }">{{ row.validUntil || "—" }}</template></el-table-column>
         <el-table-column label="状态" width="105"><template #default="{ row }"><el-tag :type="store.qualificationState(row).type" effect="light">{{ store.qualificationState(row).label }}</el-tag></template></el-table-column>
@@ -193,11 +220,16 @@ async function download(item: Evidence) {
         </el-select></el-form-item>
         <el-form-item label="品牌权利人" required><el-input v-model="form.rightsHolder" /></el-form-item>
         <el-form-item v-if="form.relation === 'authorized'" label="直接授权方" required><el-input v-model="form.authorizer" /></el-form-item>
-        <el-form-item label="供货范围" required><el-select v-model="form.scope">
+        <el-form-item label="供货范围" required><el-select v-model="form.scope" @change="changeScope">
           <el-option v-for="(label, value) in scopeLabel" :key="value" :label="label" :value="value" />
         </el-select></el-form-item>
-        <el-form-item v-if="form.scope !== 'brand'" :label="scopeLabel[form.scope]" required>
-          <el-input v-model="scopeText" :placeholder="form.scope === 'category' ? '输入品类，例如茶饮料、瓶装水' : '输入商品名称或条码'" />
+        <el-form-item v-if="form.scope === 'category'" label="指定商品品类" required>
+          <el-cascader v-model="form.scopeItems" :options="categoryOptions" :props="categoryProps" filterable clearable collapse-tags :max-collapse-tags="2" placeholder="从商品分类目录选择，可多选任一层级" style="width: 100%" />
+          <small v-if="legacyScopeNeedsRemap" class="scope-hint">原记录使用自由输入的品类名称，请从分类目录重新选择。</small>
+          <small v-else class="muted">停用的分类不可用于新提交；选择上级表示包含其下级。</small>
+        </el-form-item>
+        <el-form-item v-else-if="form.scope === 'product'" label="指定商品" required>
+          <el-input v-model="scopeText" placeholder="输入商品名称或条码" />
           <small class="muted">多项用顿号或逗号分隔</small>
         </el-form-item>
         <el-form-item label="生效日期" required><el-date-picker v-model="form.validFrom" value-format="YYYY-MM-DD" type="date" :placeholder="businessDate()" /></el-form-item>
@@ -224,7 +256,7 @@ async function download(item: Evidence) {
           <el-descriptions-item label="主体关系">{{ relationLabel[selected.relation] }}</el-descriptions-item>
           <el-descriptions-item label="品牌权利人">{{ selected.rightsHolder }}</el-descriptions-item>
           <el-descriptions-item v-if="selected.authorizer" label="直接授权方">{{ selected.authorizer }}</el-descriptions-item>
-          <el-descriptions-item label="供货范围">{{ scopeLabel[selected.scope] }}<span v-if="selected.scopeItems.length"> · {{ selected.scopeItems.join("、") }}</span></el-descriptions-item>
+          <el-descriptions-item label="供货范围">{{ scopeLabel[selected.scope] }}<span v-if="selected.scopeItems.length"> · {{ scopeSummary(selected) }}</span></el-descriptions-item>
           <el-descriptions-item label="供货限制">{{ selected.restrictions || "—" }}</el-descriptions-item>
           <el-descriptions-item label="有效期">{{ selected.validFrom }} 至 {{ selected.validUntil || "无截止日期" }}</el-descriptions-item>
           <el-descriptions-item label="状态">{{ store.qualificationState(selected).label }}</el-descriptions-item>
@@ -258,6 +290,7 @@ async function download(item: Evidence) {
 .brand-form .wide { grid-column: 1 / -1; }
 .brand-form :deep(.el-date-editor) { width: 100%; }
 .evidence-list { width: 100%; overflow-wrap: anywhere; }
+.scope-hint { color: var(--el-color-warning); }
 .evidence-list small { margin-left: 8px; }
 .review-brand-note { margin-top: 18px; }
 @media (max-width: 580px) { .brand-form { grid-template-columns: 1fr; } }

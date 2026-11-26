@@ -20,6 +20,7 @@ const router = createRouter({
         { path: "my/profile", component: () => import("@/views/ProfileView.vue"), meta: { title: "年度资料更新" } },
         { path: "qualifications", component: () => import("@/views/QualificationsView.vue"), meta: { title: "资质证照" } },
         { path: "brands", component: () => import("@/views/BrandCatalogView.vue"), meta: { title: "品牌档案" } },
+        { path: "categories", component: () => import("@/views/CategoryCatalogView.vue"), meta: { title: "商品分类" } },
         { path: "brand-qualifications", component: () => import("@/views/BrandQualificationsView.vue"), meta: { title: "品牌资质" } },
         { path: "accounts", component: () => import("@/views/AccountsView.vue"), meta: { title: "账号管理" } },
         { path: "reviews", component: () => import("@/views/ReviewsView.vue"), meta: { title: "资料审核" } },

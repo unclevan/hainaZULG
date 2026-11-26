@@ -9,6 +9,7 @@ export const isSupplierRole = (role: DemoRole) => role === "supplier" || role ==
 export function roleCanOwnMenu(role: DemoRole, path: string) {
   if (path === "/brand-qualifications") return role === "supplier";
   if (path === "/brands") return role === "admin" || role === "reviewer";
+  if (path === "/categories") return role === "admin" || role === "reviewer" || role === "finance";
   if (path === "/my/profile") return role === "supplier";
   if (path === "/accounts") return role === "admin" || role === "supplier";
   if (path === "/settings/roles" || path === "/settings/notices" || path === "/settings/announcements" || path === "/settings/home-popup") return role === "admin";
@@ -34,6 +35,7 @@ export const navigation: NavItem[] = [
   { title: "资质证照", path: "/qualifications", group: "供应商管理", icon: "Files", description: "企业资质上传、查询和到期提醒", roles: ["admin", "reviewer", "supplier"], status: "ready" },
   { title: "品牌资质", path: "/brand-qualifications", group: "供应商管理", icon: "Medal", description: "提交和维护本企业的品牌权属及供货授权", roles: ["supplier"], status: "ready" },
   { title: "品牌档案", path: "/brands", group: "商品管理", icon: "Collection", description: "维护品牌档案和处理新品牌申请", roles: ["admin", "reviewer"], status: "ready" },
+  { title: "商品分类", path: "/categories", group: "商品管理", icon: "Goods", description: "查阅存量四级商品分类，供品牌资质引用", roles: ["admin", "reviewer", "finance"], status: "ready" },
   { title: "商品资料查询", path: "/catalog/products", group: "资料查询", icon: "Goods", description: "查询本供应商商品和质检报告；商品主数据属于 PSI", roles: ["admin", "reviewer", "supplier"], status: "planned" },
   { title: "供应商库存查询", path: "/catalog/inventory", group: "资料查询", icon: "Box", description: "查询本供应商相关库存；库存主数据属于 PSI", roles: ["admin", "reviewer", "supplier"], status: "planned" },
   { title: "供应商销量查询", path: "/catalog/sales", group: "资料查询", icon: "TrendCharts", description: "查询授权范围内的本供应商商品销量；销售主数据属于 PSI", roles: ["admin", "reviewer", "supplier"], status: "planned" },

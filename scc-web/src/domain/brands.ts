@@ -1,5 +1,6 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
+import { useCategoryStore } from "./categories";
 
 export interface Brand {
   id: string;
@@ -155,7 +156,10 @@ export const useBrandStore = defineStore("brands", () => {
     if (!input.rightsHolder.trim() || (input.relation === "authorized" && !input.authorizer.trim())) {
       throw new Error("请填写权利人及适用的直接授权方");
     }
-    if (input.scope !== "brand" && !input.scopeItems.length) throw new Error("请填写允许供货的品类或商品");
+    if (input.scope !== "brand" && !input.scopeItems.length) throw new Error("请选择允许供货的品类或填写商品");
+    if (input.scope === "category" && input.scopeItems.some(id => !useCategoryStore().isSelectable(id))) {
+      throw new Error("所选商品分类不存在或已停用，请重新选择");
+    }
     if (!input.validFrom || (input.relation === "authorized" && !input.validUntil)
       || (input.validUntil && input.validUntil < input.validFrom)) throw new Error("请填写有效的起止日期");
   }
@@ -195,6 +199,9 @@ export const useBrandStore = defineStore("brands", () => {
       if (!approved && !note.trim()) throw new Error("请填写退回原因");
       if (approved && !next.brands.some(brand => brand.id === item.brandId && brand.active)) {
         throw new Error("该品牌已停用，请先处理品牌档案");
+      }
+      if (approved && item.scope === "category" && item.scopeItems.some(id => !useCategoryStore().isSelectable(id))) {
+        throw new Error("商品分类不存在或已停用，请退回供应商重新选择");
       }
       Object.assign(item, { status: approved ? "approved" : "returned", reviewNote: note.trim(), reviewedAt: businessDate() });
     });
